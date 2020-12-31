@@ -41,26 +41,26 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(600, 450);
+  createCanvas(windowWidth, windowHeight);
 
-  sun = createSprite(520, 70);
+  sun = createSprite(width-50, 70, 10, 10);
   sun.addAnimation("Sun", SunImg);
 
-  ground = createSprite(200, 410, 400, 20);
+  ground = createSprite(width/2,height-25 ,width,2);
   ground.addImage(groundImg);
   ground.scale = 0.4;
 
-  mario = createSprite(50, 350);
+  mario = createSprite(50, height-70);
   mario.addAnimation("running", smallmario_running);
   mario.addAnimation("jumping", mario_jumping);
   mario.addAnimation("collided", mario_collided);
   mario.scale = 0.5;
 
-  gameOver = createSprite(300, 145);
+  gameOver = createSprite(width/2,height/2- 70);
   gameOver.addImage(gameOverImg);
   gameOver.scale = 1.5;
 
-  restart = createSprite(300, 225);
+  restart = createSprite(width/2,height/2);
   restart.addImage(RestartImg);
   restart.scale = 0.9;
 
@@ -82,10 +82,11 @@ function draw() {
 
   if (gameState === PLAY) {
 
-    ground.velocityX = -5;
+    ground.velocityX = -(5 + 3*score/100);
 
-    if (ground.x < 0) {
-      ground.x = 200;
+    if (ground.x < 80) {
+      ground.x = 300;
+      ground.y = height-25;
     }
 
     if (score > 0 && score % 200 === 0) {
@@ -95,9 +96,10 @@ function draw() {
     if (keyWentDown("space") && mario.y >= 275) {
       jumpsound.play();
     }
-
-    if (keyDown("space") && mario.y >= 275) {
+    
+    if (touches.length > 0 || keyDown("space") && mario.y >= height- 140) {
       mario.velocityY = -10;
+      touches = [];
       mario.changeAnimation("jumping", mario_jumping);
     } else if (mario.isTouching(ground)) {
       mario.changeAnimation("running", smallmario_running);
@@ -169,9 +171,10 @@ function draw() {
     gameOver.visible = true;
     restart.visible = true;
 
-    if (mousePressedOver(restart)) {
+    if (touches.restart || mousePressedOver(restart)) {
       reset();
       resetSound.play();
+      touches = []
     }
   }
 
@@ -189,7 +192,7 @@ function draw() {
 }
 
 function reset() {
-  mario.y = 350;
+  mario.y = height-70;
   mario.collide(ground);
   gameState = PLAY;
 
@@ -211,7 +214,7 @@ function reset() {
 
 function spawnclouds() {
   if (frameCount % 60 === 0) {
-    Cloud = createSprite(700, Math.round(random(30, 220)));
+    Cloud = createSprite(width + 20,height - 300,40,10);
     Cloud.addImage(cloudImg);
     Cloud.scale = 0.5;
     Cloud.velocityX = -5;
@@ -224,7 +227,7 @@ function spawnclouds() {
 
 function spawnmountains() {
   if (frameCount % 250 === 0) {
-    mountain = createSprite(700, 330);
+    mountain = createSprite(700, height-95);
     mountain.addImage(mountainImg);
     mountain.scale = 2.9;
     mountain.velocityX = -5;
@@ -236,48 +239,48 @@ function spawnmountains() {
 }
 
 function enemy() {
-  if (frameCount % 330 === 0) {
-    goomba1 = createSprite(700, 350);
+  if (frameCount % 230 === 0) {
+    goomba1 = createSprite(700, height-85);
     goomba1.addAnimation("moving", goombaImg);
     goomba1.scale = 0.4;
-    goomba1.velocityX = -5;
+    goomba1.velocityX = -(6 + 3*score/100);
     goomba1.lifetime = 175;
     goomba1.setCollider("rectangle", 0, 0, 100, 40);
     //goomba1.debug = true;
     goombaGroup1.add(goomba1);
 
-    goomba2 = createSprite(goomba1.x + 40, 350);
+    goomba2 = createSprite(goomba1.x + 40, height-85);
     goomba2.addAnimation("moving", goombaImg);
     goomba2.scale = 0.4;
-    goomba2.velocityX = -5;
+    goomba2.velocityX = -(6 + 3*score/100);
     goomba2.lifetime = 185;
     goomba2.setCollider("rectangle", 0, 0, 100, 40);
     //goomba2.debug = true;
     goombaGroup2.add(goomba2);
 
-    goomba3 = createSprite(goomba1.x + 80, 350);
+    goomba3 = createSprite(goomba1.x + 80, height-85);
     goomba3.addAnimation("moving", goombaImg);
     goomba3.scale = 0.4;
-    goomba3.velocityX = -5;
+    goomba3.velocityX = -(6 + 3*score/100);
     goomba3.lifetime = 195;
     goomba3.setCollider("rectangle", 0, 0, 100, 40);
     //goomba3.debug = true;
     goombaGroup3.add(goomba3);
 
-    invisibleblock1 = createSprite(700, 330, 20, 20);
-    invisibleblock1.velocityX = -5;
+    invisibleblock1 = createSprite(700, goomba1.y-20, 20, 20);
+    invisibleblock1.velocityX = -(6 + 3*score/100);
     invisibleblock1.lifetime = 175;
     invisibleblock1.visible = false;
     invisibleblocksGroup1.add(invisibleblock1);
 
-    invisibleblock2 = createSprite(740, 330, 20, 20);
-    invisibleblock2.velocityX = -5;
+    invisibleblock2 = createSprite(740, goomba2.y-20, 20, 20);
+    invisibleblock2.velocityX = -(6 + 3*score/100);
     invisibleblock2.lifetime = 185;
     invisibleblock2.visible = false;
     invisibleblocksGroup2.add(invisibleblock2);
 
-    invisibleblock3 = createSprite(780, 330, 20, 20);
-    invisibleblock3.velocityX = -5;
+    invisibleblock3 = createSprite(780, goomba3.y-20, 20, 20);
+    invisibleblock3.velocityX = -(6 + 3*score/100);
     invisibleblock3.lifetime = 195;
     invisibleblock3.visible = false;
     invisibleblocksGroup3.add(invisibleblock3);
@@ -286,15 +289,15 @@ function enemy() {
 
 function spawnobstacles() {
   if (frameCount % 100 === 0) {
-    obstacle = createSprite(700, 340);
-    obstacle.velocityX = -5;
+    obstacle = createSprite(700, height-95);
+    obstacle.velocityX = -(6 + 3*score/100);
 
     r = Math.round(random(1, 3));
     switch (r) {
       case 1:
         obstacle.addAnimation("obstacle", obstacleImg_1);
         obstacle.scale = 0.8;
-        obstacle.y = 335;
+        obstacle.y = height-90;
         break;
       case 2:
         obstacle.addImage(obstacleImg_2);
